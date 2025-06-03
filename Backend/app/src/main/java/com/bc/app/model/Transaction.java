@@ -25,6 +25,10 @@ public class Transaction {
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;

@@ -1,8 +1,9 @@
 package com.bc.app.controller;
 
-import com.bc.app.dto.AuthResponse;
-import com.bc.app.dto.LoginRequest;
-import com.bc.app.dto.RegisterRequest;
+import com.bc.app.dto.auth.JwtResponse;
+import com.bc.app.dto.auth.LoginRequest;
+import com.bc.app.dto.auth.MessageResponse;
+import com.bc.app.dto.auth.SignupRequest;
 import com.bc.app.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +15,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.login(loginRequest));
+    @PostMapping("/signin")
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authService.authenticateUser(loginRequest));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        return ResponseEntity.ok(authService.register(registerRequest));
+    @PostMapping("/signup")
+    public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
+        return ResponseEntity.ok(authService.registerUser(signupRequest));
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<MessageResponse> validateToken(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(authService.validateToken(token.substring(7)));
     }
 } 

@@ -1,17 +1,21 @@
 package com.bc.app.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "customers")
-@Getter
-@Setter
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,32 +24,32 @@ public class Customer {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
-    @Column
+    @Column(unique = true)
     private String email;
 
-    @Column
+    @Column(nullable = false)
+    private String phone;
+
     private String address;
 
-    @Column
-    private String city;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
 
-    @Column(name = "tax_number")
-    private String taxNumber;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 
-    @Column(name = "credit_limit")
-    private Double creditLimit;
+    @Column(name = "discount_percentage")
+    private BigDecimal discountPercentage;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    @ManyToOne
+    @JoinColumn(name = "user_group_id")
+    private UserGroup userGroup;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "customer")
+    private List<Invoice> invoices = new ArrayList<>();
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private boolean active = true;
 } 

@@ -1,70 +1,78 @@
 package com.bc.app.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "invoices")
-@Getter
-@Setter
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "invoice_number", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String invoiceNumber;
-
-    @ManyToOne
-    @JoinColumn(name = "transaction_id", nullable = false)
-    private Transaction transaction;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @Column(name = "invoice_date", nullable = false)
-    private LocalDateTime invoiceDate;
+    @ManyToOne
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
 
-    @Column(name = "due_date", nullable = false)
-    private LocalDateTime dueDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 
-    @Column(name = "subtotal", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private User employee;
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+    private List<InvoiceItem> items = new ArrayList<>();
+
+    @Column(nullable = false)
     private BigDecimal subtotal;
-
-    @Column(name = "tax_amount")
-    private BigDecimal taxAmount;
 
     @Column(name = "discount_amount")
     private BigDecimal discountAmount;
 
-    @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
+    @Column(name = "tax_amount")
+    private BigDecimal taxAmount;
 
-    @Column(name = "amount_paid")
-    private BigDecimal amountPaid;
+    @Column(nullable = false)
+    private BigDecimal total;
 
-    @Column(name = "balance_due")
-    private BigDecimal balanceDue;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    @Column(name = "notes")
-    private String notes;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 } 
