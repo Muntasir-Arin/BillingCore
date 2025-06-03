@@ -1,11 +1,13 @@
 package com.bc.app.service;
 
-import com.bc.app.dto.LoginRequest;
-import com.bc.app.dto.RegisterRequest;
-import com.bc.app.dto.AuthResponse;
+import com.bc.app.dto.auth.JwtResponse;
+import com.bc.app.dto.auth.LoginRequest;
+import com.bc.app.dto.auth.MessageResponse;
+import com.bc.app.dto.auth.SignupRequest;
 
 public interface AuthService {
-    AuthResponse login(LoginRequest loginRequest);
-    AuthResponse register(RegisterRequest registerRequest);
+    JwtResponse authenticateUser(LoginRequest loginRequest);
+    MessageResponse registerUser(SignupRequest signupRequest);
+    MessageResponse validateToken(String token);
     void createInitialAdmin();
 } 
